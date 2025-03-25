@@ -11,8 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('proyectos', function (Blueprint $table) {
+        Schema::create('comentarios', function (Blueprint $table) {
+            $table->id();
+            $table->string('comentario');
+            $table->string('fecha');
+            $table->foreignId('tarea_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->timestamps();
         });
     }
 
@@ -21,9 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('proyectos', function (Blueprint $table) {
-            $table->dropForeign('proyectos_user_id_foreign');
-            $table->dropColumn('user_id');
-        });
+        Schema::dropIfExists('comentarios');
     }
 };

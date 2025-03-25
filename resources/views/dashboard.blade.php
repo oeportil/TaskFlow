@@ -9,41 +9,14 @@
         <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
             <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
-                   <h3 class="text-xl font-bold text-center">Tareas</h3>
-
-                   <form class="flex gap-2 ">
-                    @csrf
-                        <div class="w-full mb-4">
-                            <label for="prioridad" class="block mb-2 font-bold text-gray-700">Prioridad</label>
-                            <select name="prioridad" id="prioridad" class="block w-full p-2 mt-1 border rounded">
-                                <option value="todos">Todas las Prioridades</option>
-                                <option value="baja">Baja</option>
-                                <option value="media">Media</option>
-                                <option value="alta">Alta</option>
-                            </select>
+                   @if (auth()->user()->tipo == "admin")
+                        <div class="pb-10 border-b mb-14 border-slate-200">
+                            <h3 class="text-xl font-bold text-center">Metricas</h3>
+                            <livewire:graficas-dashboard/>
                         </div>
+                   @endif
 
-                        <div class="w-full mb-4">
-                            <label for="estado" class="block mb-2 font-bold text-gray-700">Estado</label>
-                            <select name="estado" id="estado" class="block w-full p-2 mt-1 border rounded">
-                                <option value="Todos">Todos los Estados</option>
-                                <option value="Pendiente" >Pendiente</option>
-                                <option value="En Progreso" >En Progreso</option>
-                                <option value="Completada">Completada</option>
-                            </select>
-                        </div>
-
-                        <div class="w-full mb-4">
-                            <label for="estado" class="block mb-2 font-bold text-gray-700">Usuarios</label>
-                            <select name="estado" id="estado" class="block w-full p-2 mt-1 border rounded">
-                                <option value="0">Todos los usuarios</option>
-                                @foreach ($usuarios as $usuario)
-                                    <option value="{{ $usuario->id }}">{{ $usuario->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                   </form>
+                   <h3 class="text-xl font-bold text-center">Mis Tareas</h3>
 
                     <div class="mt-5 space-y-2">
                         @forelse ($tareas as $tarea)
