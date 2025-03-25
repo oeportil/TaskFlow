@@ -22,7 +22,7 @@
                     @forelse ($proyectos as $proyecto)
                         <div class="flex items-center justify-between p-5 rounded-md shadow shadow-slate-300 bg-slate-100">
                             <div>
-                                <a class="text-xl font-bold cursor-pointer hover:underline">{{$proyecto->nombre}}</a>
+                                <a class="text-xl font-bold cursor-pointer hover:underline" href="{{route('proyecto.show', $proyecto)}}">{{$proyecto->nombre}}</a>
                                 <p> {{$proyecto->descripcion}}</p>
                                 <div class="flex justify-start">
                                     <p class="text-xs me-5"><span class="font-bold">Inicio: </span>{{$proyecto->fecha_inicio}}</p>
@@ -32,10 +32,10 @@
                             <div class="flex flex-col items-center gap-2">
                                 <a href="{{route('proyecto.edit', $proyecto)}}" class="w-full p-2 text-sm text-center text-white rounded-md bg-sky-700 hover:bg-sky-800">Editar</a>
                                 <a href="" class="w-full p-2 text-sm text-center text-white bg-indigo-700 rounded-md hover:bg-indigo-800">Ver Tareas</a>
-                                <form action="{{route('proyecto.delete', $proyecto)}}" method="POST" class="w-full">
+                                <form id="delete-form-{{$proyecto->id}}" action="{{route('proyecto.delete', $proyecto)}}" method="POST" class="w-full">
                                     @csrf
                                     @method('DELETE')
-                                    <button class="w-full p-2 text-sm text-center text-white bg-red-700 rounded-md hover:bg-red-800">Eliminar</button>
+                                    <button type="button" onclick="confirmDelete({{$proyecto->id}})" class="w-full p-2 text-sm text-center text-white bg-red-700 rounded-md hover:bg-red-800">Eliminar</button>
                                 </form>
                             </div>
                         </div>
@@ -49,4 +49,31 @@
             </div>
         </div>
     </div>
+
+    <div id="confirmation-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-black bg-opacity-50">
+        <div class="p-6 bg-white rounded-lg">
+            <h2 class="mb-4 text-lg font-bold text-gray-800">¿Estás seguro que quieres eliminar este proyecto?</h2>
+            <div class="flex justify-end gap-4">
+                <button onclick="closeModal()" class="p-2 text-sm text-gray-600 bg-gray-200 rounded hover:bg-gray-300">Cancelar</button>
+                <button id="confirm-delete-button" class="p-2 text-sm text-white bg-red-600 rounded hover:bg-red-700">Eliminar</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        function confirmDelete(formId) {
+            const modal = document.getElementById('confirmation-modal');
+            modal.style.display = 'flex';
+
+            const confirmButton = document.getElementById('confirm-delete-button');
+            confirmButton.onclick = function () {
+                document.getElementById(`delete-form-${formId}`).submit();
+                closeModal();
+            };
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('confirmation-modal');
+            modal.style.display = 'none';
+        }
+    </script>
 </x-app-layout>

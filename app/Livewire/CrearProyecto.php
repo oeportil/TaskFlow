@@ -24,6 +24,13 @@ class CrearProyecto extends Component
     }
 
     public function crearProyecto(){
+        $this->validate([
+            'fecha_fin' => function ($attribute, $value, $fail) {
+                if ($value < $this->fecha_inicio) {
+                    $fail('La fecha de finalización no puede ser anterior a la fecha de inicio.');
+                }
+            }
+        ]);
         $datos = $this->validate();
         Proyecto::create([
             'nombre' => $datos['nombre'],

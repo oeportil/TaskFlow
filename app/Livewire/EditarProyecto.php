@@ -35,6 +35,13 @@ class EditarProyecto extends Component
 
 
     public function editarProyecto(){
+        $this->validate([
+            'fecha_fin' => function ($attribute, $value, $fail) {
+                if ($value < $this->fecha_inicio) {
+                    $fail('La fecha de finalización no puede ser anterior a la fecha de inicio.');
+                }
+            }
+        ]);
         $datos = $this->validate();
         $proyecto = Proyecto::find($this->proyecto_id);
         $proyecto->update([
