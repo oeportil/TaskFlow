@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Proyecto;
 use App\Models\Tarea;
 use App\Models\User;
+use App\Models\Checklist;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\TareaAsignada;
@@ -176,5 +177,66 @@ class TareaController extends Controller
     private function tareaVencida(Tarea $tarea)
     {
         return \Carbon\Carbon::now()->greaterThan($tarea->fecha_limite);
+    }
+    public function agregarComentario(Request $request, Tarea $tarea)
+    {
+        $request->validate([
+            'contenido' => 'required|string|max:1000'
+        ]);
+    
+        $tarea->comentarios()->create([
+            'user_id' => auth()->id(),
+            'tarea_id' => $tarea->id,
+            'comentario' => $request->contenido,
+            'fecha' => now(),
+        ]);
+    
+        return back()->with('mensaje', 'Comentario agregado.');
+    }
+    
+    public function agregarChecklist(Request $request, Tarea $tarea)
+    {
+        $request->validate([
+            'item' => 'required|string|max:255'
+        ]);
+    
+        if (auth()->user()->tipo !== 'admin' && auth()->user()->id !== $tarea->user_id) {
+            return back()->with('error', 'No tienes permiso para modificar la checklist.');
+        }
+    
+        $tarea->checklists()->create([
+            'tarea_id' => $tarea->id,
+            'item' => $request->item,
+            'valor' => false,  
+            'fecha_creacion' => now(),  
+            'fecha_modificacion' => now()
+        ]);
+    
+        return back()->with('mensaje', 'Elemento agregado a la checklist.');
+    }
+    
+    public function actualizarChecklist(Request $request, Checklist $checklist)
+    {
+        if (auth()->user()->tipo !== 'admin' && auth()->user()->id !== $checklist->tarea->user_id) {
+            return back()->with('error', 'No tienes permiso para actualizar este elemento.');
+        }
+    
+        $checklist->update([
+            'valor' => !$checklist->valor,  
+            'fecha_modificacion' => now()  
+        ]);
+    
+        return back()->with('mensaje', 'Estado de la checklist actualizado.');
+    }
+    
+    public function eliminarChecklist(Checklist $checklist)
+    {
+        if (auth()->user()->tipo !== 'admin' && auth()->user()->id !== $checklist->tarea->user_id) {
+            return back()->with('error', 'No tienes permiso para eliminar este elemento.');
+        }
+    
+        $checklist->delete();
+    
+        return back()->with('mensaje', 'Elemento eliminado de la checklist.');
     }
 }

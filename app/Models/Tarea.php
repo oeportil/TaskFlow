@@ -23,4 +23,14 @@ class Tarea extends Model
     public function user() {
         return $this->belongsTo(User::class);
     }
+    
+    public function checklists()
+    {
+        return $this->hasMany(Checklist::class);
+    }
+
+    public function comentarios()
+    {
+        return $this->hasMany(Comentario::class);
+    }
 }

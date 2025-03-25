@@ -39,7 +39,6 @@
                         Guardar
                     </button>
                 </form>
-
             @endif
 
             @if($esAdmin)
@@ -65,6 +64,53 @@
                class="block px-4 py-2 mt-6 font-bold text-center text-white bg-gray-600 rounded-lg hover:bg-gray-700">
                 Ver Proyecto
             </a>
+
+            <div class="mt-8">
+                <h3 class="text-lg font-semibold">Checklist</h3>
+                @foreach($tarea->checklists as $item)
+                    <div class="flex justify-between items-center py-2">
+                        <form action="{{ route('tarea.checklist.actualizar', $item->id) }}" method="POST">
+                            @csrf
+                            @method('PATCH')
+                            <input type="checkbox" onchange="this.form.submit()" name="completado" value="1" {{ $item->valor ? 'checked' : '' }}>
+                            <span>{{ $item->item }}</span>
+                        </form>
+                        @if($esAdmin || $esAsignado)
+                            <form action="{{ route('tarea.checklist.eliminar', $item->id) }}" method="POST">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-red-600">Eliminar</button>
+                            </form>
+                        @endif
+                    </div>
+                @endforeach
+                <form action="{{ route('tarea.checklist.agregar', $tarea->id) }}" method="POST" class="mt-4">
+                    @csrf
+                    <input type="text" name="item" class="w-full p-2 border rounded" placeholder="Añadir nuevo ítem">
+                    <button type="submit" class="px-4 py-2 mt-2 font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700">
+                        Añadir
+                    </button>
+                </form>
+            </div>
+
+            <div class="mt-8">
+                <h3 class="text-lg font-semibold">Comentarios</h3>
+                <form action="{{ route('tarea.comentario.agregar', $tarea->id) }}" method="POST" class="mt-4">
+                    @csrf
+                    <textarea name="contenido" class="w-full p-2 border rounded" rows="4" placeholder="Escribe un comentario..."></textarea>
+                    <button type="submit" class="px-4 py-2 mt-2 font-bold text-white bg-green-600 rounded-lg hover:bg-green-700">Comentar</button>
+                </form>
+
+                <div class="mt-4">
+                    @foreach($tarea->comentarios as $comentario)
+                        <div class="border-b py-2">
+                            <p class="font-semibold">{{ $comentario->usuario->name . ' ı ' . $comentario->usuario->email }}</p>
+                            <p class="text-gray-600">{{ $comentario->comentario }}</p>
+                            <p class="text-sm text-gray-400">{{ \Carbon\Carbon::parse($comentario->created_at)->format('d/m/Y H:i') }}</p>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
         </div>
     </div>
 </x-app-layout>
