@@ -7,11 +7,15 @@ use App\Http\Controllers\TareaController;
 use Illuminate\Support\Facades\Route;
 
 
-Route::get('/', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Route::get('/', function () {
+//     return view('dashboard');
+// })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {
+    //Dashboard
+    Route::get('/', [HomeController::class, 'index'])->name('dashboard');
+
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -22,7 +26,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/proyecto/{proyecto}/edit', [ProyectoController::class,'edit'])->name('proyecto.edit');
     Route::get('/proyecto/{proyecto}/show', [ProyectoController::class,'show'])->name('proyecto.show');
     Route::delete('/proyecto/{proyecto}/delete', [ProyectoController::class,'destroy'])->name('proyecto.delete');
-    
+
     //tareas
     Route::get('/tarea', [TareaController::class, 'index'])->name('tarea.index');
     Route::get('/tarea/create/{proyecto_id}', [TareaController::class, 'create'])->name('tarea.create');
