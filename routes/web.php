@@ -25,7 +25,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/proyecto/create', [ProyectoController::class,'create'])->name('proyecto.create');
     Route::get('/proyecto/{proyecto}/edit', [ProyectoController::class,'edit'])->name('proyecto.edit');
     Route::get('/proyecto/{proyecto}/show', [ProyectoController::class,'show'])->name('proyecto.show');
+    Route::get('/proyecto/{id}/exportar-excel', [ProyectoController::class, 'exportarExcel'])->name('proyecto.exportarExcel');
+    Route::get('/proyecto/{id}/export/pdf', [ProyectoController::class, 'exportPDF'])->name('proyecto.export.pdf');
     Route::delete('/proyecto/{proyecto}/delete', [ProyectoController::class,'destroy'])->name('proyecto.delete');
+
 
     //tareas
     Route::get('/tarea', [TareaController::class, 'index'])->name('tarea.index');

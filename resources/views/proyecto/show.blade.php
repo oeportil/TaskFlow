@@ -9,6 +9,15 @@
                 <p><strong>Fecha de Inicio:</strong> {{ \Carbon\Carbon::parse($proyecto->fecha_inicio)->format('d/m/Y') }}</p>
                 <p><strong>Fecha de Finalización:</strong> {{ \Carbon\Carbon::parse($proyecto->fecha_fin)->format('d/m/Y') }}</p>
             </div>
+
+            <div class="flex gap-4 mb-4">
+                <a href="{{ route('proyecto.exportarExcel', $proyecto->id) }}" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                    Exportar a Excel
+                </a>
+                <a href="{{ route('proyecto.export.pdf', $proyecto->id) }}" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg">
+                    Exportar a PDF
+                </a>
+            </div>
         </x-slot>
 
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 my-6">
