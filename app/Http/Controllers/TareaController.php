@@ -48,11 +48,17 @@ class TareaController extends Controller
 
     public function store(Request $request)
     {
+        if ($this->proyectoVencido($request->proyecto_id)) {
+            session()->flash('error', 'No se pueden agregar tareas a un proyecto vencido.');
+            return back()->with('error', 'No se pueden agregar tareas a un proyecto vencido.');
+        }
+        $proyecto = Proyecto::findOrFail($request->proyecto_id);
+
         $request->validate([
             'titulo' => 'required|string|max:255',
             'descripcion' => 'required|string',
             'prioridad' => 'required|in:baja,media,alta',
-            'fecha_limite' => 'required|date',
+            'fecha_limite' => 'required|date|before_or_equal:' . $proyecto->fecha_fin . '|after_or_equal:' . $proyecto->fecha_inicio,
             'proyecto_id' => 'required|exists:proyectos,id',
             'user_id' => 'required|exists:users,id' 
         ]);
@@ -82,8 +88,12 @@ class TareaController extends Controller
     }
     public function destroy(Tarea $tarea)
     {
-        
+        if ($this->proyectoVencido($tarea->proyecto_id)) {
+            session()->flash('error', 'No se pueden eliminar tareas a un proyecto vencido.');
+            return back()->with('error', 'No se pueden eliminar tareas a un proyecto vencido.');
+        }
         if (auth()->user()->tipo !== 'admin') {
+            session()->flash('error', 'No tienes permiso para eliminar esta tarea.');
             abort(403, 'No tienes permiso para eliminar esta tarea.');
         }
 
@@ -95,6 +105,14 @@ class TareaController extends Controller
 
     public function actualizarEstado(Request $request, Tarea $tarea)
     {
+        if ($this->proyectoVencido($tarea->proyecto_id)) {
+            session()->flash('error', 'No se pueden actualizar tareas a un proyecto vencido.');
+            return back()->with('error', 'No se pueden actualizar tareas a un proyecto vencido.');
+        }
+        if ($this->tareaVencida($tarea)) {
+            session()->flash('error', 'No se pueden actualizar tareas vencidas.');
+            return back()->with('error', 'No se pueden actualizar tareas vencidas.');
+        }
         $request->validate([
             'estado' => 'required|in:Pendiente,En Progreso,Completada',
         ]);
@@ -113,6 +131,14 @@ class TareaController extends Controller
     }
     public function actualizarAsignado(Request $request, Tarea $tarea)
     {
+        if ($this->proyectoVencido($tarea->proyecto_id)) {
+            session()->flash('error', 'No se pueden actualizar tareas a un proyecto vencido.');
+            return back()->with('error', 'No se pueden agregar tareas a un proyecto vencido.');
+        }
+        if ($this->tareaVencida($tarea)) {
+            session()->flash('error', 'No se pueden actualizar tareas vencidas.');
+            return back()->with('error', 'No se pueden eliminar tareas vencidas.');
+        }
         $request->validate([
             'asignado' => 'nullable|exists:users,id',
         ]);
@@ -131,5 +157,13 @@ class TareaController extends Controller
         return back()->with('mensaje', 'Usuario asignado correctamente.');
         
     }
-    
+    private function proyectoVencido($proyecto_id)
+    {
+        $proyecto = Proyecto::find($proyecto_id);
+        return $proyecto && \Carbon\Carbon::now()->greaterThan($proyecto->fecha_fin);
+    }
+    private function tareaVencida(Tarea $tarea)
+    {
+        return \Carbon\Carbon::now()->greaterThan($tarea->fecha_limite);
+    }
 }
