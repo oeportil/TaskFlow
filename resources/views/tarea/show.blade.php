@@ -1,17 +1,17 @@
 <x-app-layout>
-    <div class="container mx-auto px-4 my-6">
-        <div class="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-6">
+    <div class="container px-4 mx-auto my-6">
+        <div class="max-w-4xl p-6 mx-auto bg-white rounded-lg shadow-lg">
             <h2 class="text-2xl font-bold text-gray-800">{{ $tarea->titulo }}</h2>
             <p class="mt-2 text-gray-600">{{ $tarea->descripcion }}</p>
 
             <div class="mt-4 text-gray-700">
-                <p><strong>Estado:</strong> 
+                <p><strong>Estado:</strong>
                     <span class="text-blue-600">{{ ucfirst($tarea->estado) }}</span>
                 </p>
-                <p><strong>Prioridad:</strong> 
+                <p><strong>Prioridad:</strong>
                     <span class="text-red-600">{{ ucfirst($tarea->prioridad) }}</span>
                 </p>
-                <p><strong>Fecha límite:</strong> 
+                <p><strong>Fecha límite:</strong>
                     {{ \Carbon\Carbon::parse($tarea->fecha_limite)->format('d/m/Y') }}
                 </p>
                 <p><strong>Proyecto:</strong> {{ $tarea->proyecto->nombre }}</p>
@@ -35,14 +35,11 @@
                         <option value="En Progreso" {{ $tarea->estado === 'En Progreso' ? 'selected' : '' }}>En Progreso</option>
                         <option value="Completada" {{ $tarea->estado === 'Completada' ? 'selected' : '' }}>Completada</option>
                     </select>
-                    <button type="submit" class="mt-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">
+                    <button type="submit" class="px-4 py-2 mt-2 font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700">
                         Guardar
                     </button>
                 </form>
-            @else
-                <p class="mt-4 text-sm text-gray-500">
-                    No puedes cambiar el estado porque la tarea ya está completada o la fecha límite ha vencido.
-                </p>
+
             @endif
 
             @if($esAdmin)
@@ -58,14 +55,14 @@
                             </option>
                         @endforeach
                     </select>
-                    <button type="submit" class="mt-2 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg">
+                    <button type="submit" class="px-4 py-2 mt-2 font-bold text-white bg-green-600 rounded-lg hover:bg-green-700">
                         Cambiar Asignado
                     </button>
                 </form>
             @endif
 
-            <a href="{{ route('proyecto.show', $tarea->proyecto->id) }}" 
-               class="block mt-6 text-center bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg">
+            <a href="{{ route('proyecto.show', $tarea->proyecto->id) }}"
+               class="block px-4 py-2 mt-6 font-bold text-center text-white bg-gray-600 rounded-lg hover:bg-gray-700">
                 Ver Proyecto
             </a>
         </div>
