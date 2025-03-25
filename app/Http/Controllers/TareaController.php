@@ -23,9 +23,10 @@ class TareaController extends Controller
         $request->validate([
             'titulo' => 'required|string|max:255',
             'descripcion' => 'required|string',
+            'prioridad' => 'required|in:baja,media,alta',
             'fecha_limite' => 'required|date',
             'proyecto_id' => 'required|exists:proyectos,id',
-            'user_id' => 'nullable|exists:users,id'
+            'user_id' => 'required|exists:users,id' 
         ]);
 
         $tarea = Tarea::create([
@@ -48,6 +49,59 @@ class TareaController extends Controller
     }
     public function show(Tarea $tarea)
     {
-        return view('tarea.show', compact('tarea'));
+        $usuarios = User::all();
+        return view('tarea.show', compact('tarea', 'usuarios'));
     }
+    public function destroy(Tarea $tarea)
+    {
+        
+        if (auth()->user()->tipo !== 'admin') {
+            abort(403, 'No tienes permiso para eliminar esta tarea.');
+        }
+
+        $tarea->delete();
+
+        return redirect()->route('proyecto.show', $tarea->proyecto_id)
+            ->with('mensaje', 'Tarea eliminada con éxito.');
+    }
+
+    public function actualizarEstado(Request $request, Tarea $tarea)
+    {
+        $request->validate([
+            'estado' => 'required|in:Pendiente,En Progreso,Completada',
+        ]);
+
+        $esAdmin = auth()->user()->tipo === 'admin';
+        $esAsignado = auth()->user()->id === optional($tarea->user)->id;
+        $fechaVencida = \Carbon\Carbon::now()->greaterThan($tarea->fecha_limite);
+        $esCompletada = $tarea->estado === 'Completada';
+
+        if (($esAdmin || $esAsignado) && !$esCompletada && !$fechaVencida) {
+            $tarea->update(['estado' => $request->estado]);
+            return back()->with('mensaje', 'Estado actualizado correctamente.');
+        }
+
+        return back()->with('error', 'No tienes permiso para cambiar el estado de esta tarea.');
+    }
+    public function actualizarAsignado(Request $request, Tarea $tarea)
+    {
+        $request->validate([
+            'asignado' => 'nullable|exists:users,id',
+        ]);
+    
+        if (auth()->user()->tipo !== 'admin') {
+            return back()->with('error', 'No tienes permiso para asignar tareas.');
+        }
+    
+        $tarea->update(['user_id' => $request->asignado]);
+
+        if ($request->user_id) {
+            $usuario = User::find($request->user_id);
+            Mail::to($usuario->email)->send(new TareaAsignada($tarea));
+        }
+
+        return back()->with('mensaje', 'Usuario asignado correctamente.');
+        
+    }
+    
 }

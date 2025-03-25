@@ -35,15 +35,12 @@
                         <input type="date" name="fecha_limite" id="fecha_limite" class="w-full p-2 border border-gray-300 rounded-lg" required>
                     </div>
 
-                    <div class="mb-4">
-                        <label for="user_id" class="block text-gray-700 font-bold mb-2">Asignar a Usuario</label>
-                        <select name="user_id" id="user_id" class="w-full p-2 border border-gray-300 rounded-lg">
-                            <option value="">No asignado</option>
-                            @foreach ($usuarios as $usuario)
-                                <option value="{{ $usuario->id }}">{{ $usuario->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
+                    <select name="user_id" id="user_id" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                        <option value="" disabled selected>Selecciona un usuario</option>
+                        @foreach ($usuarios as $usuario)
+                            <option value="{{ $usuario->id }}">{{ $usuario->name }}</option>
+                        @endforeach
+                    </select>
 
                     <div class="flex justify-between mt-6">
                         <a href="{{ route('proyecto.show', $proyecto->id) }}" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg">
