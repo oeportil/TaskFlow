@@ -41,7 +41,7 @@ class ProyectoController extends Controller
 
     public function show(Proyecto $proyecto, Request $request)
     {
-        $usuarios = User::all();  
+        $usuarios = User::all();
         $tareas = $proyecto->tareas();
 
         // Filtros
@@ -57,7 +57,14 @@ class ProyectoController extends Controller
             $tareas = $tareas->where('user_id', $request->usuario);
         }
 
-        $tareas = $tareas->get();
+        // Obtener tareas y ordenarlas
+        $tareas = $tareas->orderByRaw("
+            CASE 
+                WHEN estado = 'Pendiente' THEN 1
+                WHEN estado = 'En Progreso' THEN 2
+                WHEN estado = 'Completada' THEN 3
+            END
+        ")->orderBy('fecha_limite', 'asc')->get();
 
         return view('proyecto.show', compact('proyecto', 'tareas', 'usuarios'));
     }

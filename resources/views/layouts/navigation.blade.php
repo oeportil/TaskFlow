@@ -23,6 +23,10 @@
                     <x-nav-link :href="route('tarea.index')" :active="request()->routeIs('tarea.index')">
                         {{ __('Tareas') }}
                     </x-nav-link>
+
+                    <x-nav-link :href="route('usuario.index')" :active="request()->routeIs('usuario.index')">
+                        {{ __('Usuarios') }}
+                    </x-nav-link>
                 </div>
             </div>
 
