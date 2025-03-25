@@ -3,6 +3,7 @@
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProyectoController;
+use App\Http\Controllers\TareaController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -19,7 +20,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/proyecto', [ProyectoController::class,'index'])->name('proyecto.index');
     Route::get('/proyecto/create', [ProyectoController::class,'create'])->name('proyecto.create');
     Route::get('/proyecto/{proyecto}/edit', [ProyectoController::class,'edit'])->name('proyecto.edit');
+    Route::get('/proyecto/{proyecto}/show', [ProyectoController::class,'show'])->name('proyecto.show');
     Route::delete('/proyecto/{proyecto}/delete', [ProyectoController::class,'destroy'])->name('proyecto.delete');
+    
+    //tareas
+    Route::get('/tarea/create/{proyecto_id}', [TareaController::class, 'create'])->name('tarea.create');
+    Route::get('/tareas/{tarea}', [TareaController::class, 'show'])->name('tarea.show');
+    Route::post('/tarea/store', [TareaController::class, 'store'])->name('tarea.store');
+    Route::delete('/tareas/{tarea}', [TareaController::class, 'destroy'])->name('tarea.destroy');
+    Route::patch('/tareas/{tarea}/estado', [TareaController::class, 'actualizarEstado'])->name('tarea.actualizarEstado');
+    Route::patch('/tareas/{tarea}/asignado', [TareaController::class, 'actualizarAsignado'])->name('tarea.actualizarAsignado');
+
 });
 
 require __DIR__.'/auth.php';

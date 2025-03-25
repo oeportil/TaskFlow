@@ -32,4 +32,9 @@ class ProyectoController extends Controller
         $proyecto->delete();
         return redirect()->route('proyecto.index')->with('mensaje', 'Proyecto eliminado con éxito.');
     }
+
+    public function show(Proyecto $proyecto)
+    {
+        return view('proyecto.show', compact('proyecto'));
+    }
 }
