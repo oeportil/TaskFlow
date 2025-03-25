@@ -24,13 +24,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/proyecto/{proyecto}/delete', [ProyectoController::class,'destroy'])->name('proyecto.delete');
     
     //tareas
+    Route::get('/tarea', [TareaController::class, 'index'])->name('tarea.index');
     Route::get('/tarea/create/{proyecto_id}', [TareaController::class, 'create'])->name('tarea.create');
     Route::get('/tareas/{tarea}', [TareaController::class, 'show'])->name('tarea.show');
     Route::post('/tarea/store', [TareaController::class, 'store'])->name('tarea.store');
     Route::delete('/tareas/{tarea}', [TareaController::class, 'destroy'])->name('tarea.destroy');
     Route::patch('/tareas/{tarea}/estado', [TareaController::class, 'actualizarEstado'])->name('tarea.actualizarEstado');
     Route::patch('/tareas/{tarea}/asignado', [TareaController::class, 'actualizarAsignado'])->name('tarea.actualizarAsignado');
-
+    
 });
 
 require __DIR__.'/auth.php';

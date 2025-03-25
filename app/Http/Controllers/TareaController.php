@@ -11,6 +11,34 @@ use App\Mail\TareaAsignada;
 
 class TareaController extends Controller
 {
+    public function index(Request $request)
+    {
+        $query = Tarea::query();
+
+        if ($request->filled('search')) {
+            $query->where('titulo', 'like', '%' . $request->search . '%')
+                  ->orWhereHas('proyecto', function ($q) use ($request) {
+                      $q->where('nombre', 'like', '%' . $request->search . '%');
+                  });
+        }
+
+        if ($request->filled('estado')) {
+            $query->where('estado', $request->estado);
+        }
+
+        if ($request->filled('prioridad')) {
+            $query->where('prioridad', $request->prioridad);
+        }
+
+        if ($request->filled('usuario')) {
+            $query->where('user_id', $request->usuario);
+        }
+
+        $tareas = $query->with(['proyecto', 'user'])->paginate(10);
+        $usuarios = User::all();
+
+        return view('tarea.index', compact('tareas', 'usuarios'));
+    }
     public function create($proyecto_id)
     {
         $proyecto = Proyecto::findOrFail($proyecto_id);

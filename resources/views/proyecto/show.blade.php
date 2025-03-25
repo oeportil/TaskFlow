@@ -22,6 +22,41 @@
                     @endif
                 </div>
 
+                {{-- Filtro de Tareas --}}
+                <div class="flex gap-4 mb-6">
+                    <form action="{{ route('proyecto.show', $proyecto->id) }}" method="GET" class="flex gap-2">
+                        <div>
+                            <select name="estado" class="p-2 border rounded px-5 text-start">
+                                <option value="">Estado</option>
+                                <option value="Pendiente" {{ request('estado') == 'Pendiente' ? 'selected' : '' }}>Pendiente</option>
+                                <option value="En Progreso" {{ request('estado') == 'En Progreso' ? 'selected' : '' }}>En Progreso</option>
+                                <option value="Completada" {{ request('estado') == 'Completada' ? 'selected' : '' }}>Completada</option>
+                            </select>
+                        </div>
+                        <div>
+                            <select name="prioridad" class="p-2 border rounded px-8 text-start ps-4">
+                                <option value="">Prioridad</option>
+                                <option value="Alta" {{ request('prioridad') == 'Alta' ? 'selected' : '' }}>Alta</option>
+                                <option value="Media" {{ request('prioridad') == 'Media' ? 'selected' : '' }}>Media</option>
+                                <option value="Baja" {{ request('prioridad') == 'Baja' ? 'selected' : '' }}>Baja</option>
+                            </select>
+                        </div>
+                        <div>
+                            <select name="usuario" class="p-2 border rounded px-5 text-start">
+                                <option value="">Usuario</option>
+                                @foreach ($usuarios as $usuario)
+                                    <option value="{{ $usuario->id }}" {{ request('usuario') == $usuario->id ? 'selected' : '' }}>
+                                        {{ $usuario->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded">Filtrar</button>
+                        </div>
+                    </form>
+                </div>
+
                 {{-- Progreso del Proyecto --}}
                 @php
                     $totalTareas = $proyecto->tareas->count();
@@ -55,7 +90,7 @@
                     <p class="text-gray-500 text-center py-6">No hay tareas asignadas a este proyecto.</p>
                 @else
                     <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                        @foreach($proyecto->tareas as $tarea)
+                        @foreach($tareas as $tarea)
                             @php
                                 $porcentajeTarea = 0;
                                 switch ($tarea->estado) {
@@ -106,31 +141,4 @@
             </div>
         </div>
     </div>
-
-    <div id="confirmation-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-black bg-opacity-50">
-        <div class="p-6 bg-white rounded-lg">
-            <h2 class="mb-4 text-lg font-bold text-gray-800">¿Estás seguro que quieres eliminar esta tarea?</h2>
-            <div class="flex justify-end gap-4">
-                <button onclick="closeModal()" class="p-2 text-sm text-gray-600 bg-gray-200 rounded hover:bg-gray-300">Cancelar</button>
-                <button id="confirm-delete-button" class="p-2 text-sm text-white bg-red-600 rounded hover:bg-red-700">Eliminar</button>
-            </div>
-        </div>
-    </div>
-    <script>
-        function confirmDelete(formId) {
-            const modal = document.getElementById('confirmation-modal');
-            modal.style.display = 'flex';
-
-            const confirmButton = document.getElementById('confirm-delete-button');
-            confirmButton.onclick = function () {
-                document.getElementById(`delete-form-${formId}`).submit();
-                closeModal();
-            };
-        }
-
-        function closeModal() {
-            const modal = document.getElementById('confirmation-modal');
-            modal.style.display = 'none';
-        }
-    </script>
 </x-app-layout>
